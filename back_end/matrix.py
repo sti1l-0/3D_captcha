@@ -1,13 +1,15 @@
 from PIL import Image, ImageFont, ImageDraw
 from random import randint, sample
 import string
-import os
+import json
 import numpy as np
 #import matplotlib.pyplot as plt
 
 
 def randstrToImage():
+    #随机生成四位字符的串
     randstr = ''.join(sample(string.ascii_letters + string.digits, 4))
+    #弄成图片
     font = ImageFont.truetype("arial.ttf", 48)
     im = Image.new("RGB", (128, 64), (255, 255, 255))
     draw = ImageDraw.Draw(im)
@@ -97,3 +99,13 @@ def MatrixToObj(matrix):
                 file = make_cube(row, pixel, file, 0.5, len(matrix[0]), count)
                 count += 8
     return file
+
+def rotate(file):
+    """
+        返回旋转后obj和旋转的角度
+    """
+    #测试，暂时不旋转
+    return file, json.dumps({})
+
+def get_obj():
+    return rotate(MatrixToObj(ImageToMatrix(randstrToImage()).tolist()))
