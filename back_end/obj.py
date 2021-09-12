@@ -1,10 +1,13 @@
 from flask import Flask, make_response, session, request
 from flask_cors import CORS
-import matrix, json
+from math import atan
+import matrix
+import json
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "captcha"
-CORS(app,supports_credentials=True)
+CORS(app, supports_credentials=True)
 
 
 @app.route("/get_file")
@@ -18,13 +21,12 @@ def make_file():
 @app.route("/check", methods=['POST'])
 def check_pos():
     a = json.loads(request.data)
-    response = make_response(str(
-        (a["posx"]/30)**2 + (a["posy"]/50)**2 < 2
-        and
-        a["posz"] < -90
-    ))
+    theta = atan(( a["posx"]**2 + a["posy"]**2 )**0.5 / a["posz"])
+    phi = atan(a["posy"] / a["posx"])
+    cha = lambda x: abs(abs(x) - 3.14/2) < 0.2
+    response = make_response(str(cha(theta) and cha(phi)))
     return response
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=80)
+    app.run(debug=True, host='0.0.0.0', port=80)

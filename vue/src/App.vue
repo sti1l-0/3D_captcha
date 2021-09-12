@@ -54,9 +54,9 @@ export default {
       );
       this.$axios
         .post("http://192.168.1.102/check", {
-          posx: this.$refs.model.camera.position.x,
-          posy: this.$refs.model.camera.position.y,
-          posz: this.$refs.model.camera.position.z,
+          posx: this.$refs.model.camera.position.y,
+          posy: this.$refs.model.camera.position.z,
+          posz: this.$refs.model.camera.position.x,
         })
         .then((response) => (this.pass = response.data));
     },
