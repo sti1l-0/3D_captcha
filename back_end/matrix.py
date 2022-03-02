@@ -1,24 +1,28 @@
+from tkinter import CENTER
 from PIL import Image, ImageFont, ImageDraw
 from random import randint, sample, random
 import string
 import json
 import numpy as np
 
-# import matplotlib.pyplot as plt
-
+imageSize = 64
 
 def randstrToImage():
-    imageSize = 64
     # 随机生成四位字符的串
-    randstr0 = "".join(sample(string.ascii_letters + string.digits, 2))
-    randstr1 = "".join(sample(string.ascii_letters + string.digits, 2))
+    randstr00 = "".join(sample(string.ascii_letters + string.digits, 1))
+    randstr01 = "".join(sample(string.ascii_letters + string.digits, 1))
+    randstr10 = "".join(sample(string.ascii_letters + string.digits, 1))
+    randstr11 = "".join(sample(string.ascii_letters + string.digits, 1))
     # 弄成图片
-    font = ImageFont.truetype("arialbi.ttf", imageSize // 2 + 8)
+    font = ImageFont.truetype("./firacode.ttf", imageSize//2)
     im = Image.new("RGB", (imageSize, imageSize), (255, 255, 255))
     draw = ImageDraw.Draw(im)
-    draw.text((0, 0), randstr0, font=font, fill="#000000")
-    draw.text((0, imageSize // 2 - 2), randstr1, font=font, fill="#000000")
-    # im.show()
+    center = (imageSize//2,imageSize//2)
+    draw.text(center, randstr00, anchor='rs', font=font, fill="#000000")
+    draw.text(center, randstr01, anchor='rt', font=font, fill="#000000")
+    draw.text(center, randstr10, anchor='ls', font=font, fill="#000000")
+    draw.text(center, randstr11, anchor='lt', font=font, fill="#000000")
+    print(randstr00,randstr01,randstr10,randstr11)
     return im
 
 
@@ -47,6 +51,7 @@ def __ObjFile(_file):
     filename = "newobj.obj"
     file = open(filename, "w")
     file.write(_file)
+    file.close()
 
 
 def MatrixToObj(matrix):
@@ -85,9 +90,9 @@ def MatrixToObj(matrix):
             #
             file += (
                 "v "
-                + str(v[2] * cubesize - pixel + 64)
+                + str(v[2] * cubesize - pixel + imageSize//2)
                 + " "
-                + str(v[0] * cubesize - row + 32)
+                + str(v[0] * cubesize - row + imageSize//4)
                 + " "
                 + str(v[1] * cubesize + z)
                 + "\n"
@@ -123,14 +128,15 @@ def rotate(file):
     返回旋转后obj和旋转的角度
     """
     # 测试，暂时不旋转
-    return file, json.dumps({})
+    return file, 'rotation data'
 
 
 def get_obj():
+    # return rotate(MatrixOnBall(ImageToMatrix(parallel()).tolist()))
     return rotate(MatrixOnBall(ImageToMatrix(randstrToImage()).tolist()))
 
 
-def mackacube(x, y, z, count, cubesize=0.5) -> str:
+def mackacube(x, y, z, count, cubesize=0.8) -> str:
     """
     这里的xy应该是原图片矩阵的xy
     z为根据计算得到的纵轴坐标
@@ -161,7 +167,7 @@ def mackacube(x, y, z, count, cubesize=0.5) -> str:
         [8, 4, 6],
     ]
     # 定义一个方块
-    acube = "\no Object." + str(x) + "" + str(y) + "\n"
+    acube = "\no Object." + str(x) + "_" + str(y) + "_" + str(z) + "\n"
     # 写入一个方块
     for v in vs:
         #
@@ -189,43 +195,32 @@ def mackacube(x, y, z, count, cubesize=0.5) -> str:
 
 
 def MatrixOnBall(matrix):
-    # 切方片
-    peace = 4  # 横竖各分一半，总共四片
-    peace_size = len(matrix[0]) // peace  # 每一片的边长大小
     count = 0
     file = "# Exported by python code\n"
-    max = [0,0]
-    # 前两个循环遍历所有的方片，peace_x,peace_y标识现在是第几个方片
-    for i in [1,2]:
-        for peace_x in range(peace):
-            for peace_y in range(peace):
-                # 生成并随机选取一个球面方程或平面方程
-                d = random()
-                a = random()-0.5
-                b = random()-0.5
-                c = random()
-
-                def ball_z(x, y) -> int:
-                    return (962*(a**2+b**2+c**2)  - (x-31*a)**2 - (y-31*b)**2 )**0.5 + 31*c
-
-                def plane_z(x, y):
-                    return d + a*1.5 * x + b*1.5 * y
-
-                final_z = plane_z if randint(1, 1) else ball_z
-                # 双循环取方片内的所有点，inner_x,inner_y标识方片中的哪个点
-                for inner_x in range(peace_size):
-                    for inner_y in range(peace_size):
-                        # 拼凑还原该点在图像矩阵中的横纵坐标xy
-                        x = peace_x * peace_size + inner_x
-                        y = peace_y * peace_size + inner_y
-                        max[0] = x if x > max[0] else max[0]
-                        max[1] = y if y > max[1] else max[1]
-                        if matrix[x][y] == 0:
-                            z = final_z(x, y)
-                            file += mackacube(x, y, z, count)
-                            count += 8
+    def final_z(x,y):
+        return randint(0, 48)
+    for x in range(imageSize):
+        for y in range(imageSize):
+            if matrix[x][y] == 0:
+                z = final_z(x, y)
+                def extand(x, z):
+                    return int((x-imageSize//2) * (2-z/72))
+                px = extand(x, z)
+                py = extand(y, z)
+                file += mackacube(px, py, z, count)
+                count += 8
     return file
 
+def parallel():
+    im = Image.new("RGB", (imageSize, imageSize), (255, 255, 255))
+    draw = ImageDraw.Draw(im)
+    draw.chord([(16, 0), (16,64)], start=0, end=30, fill=128)
+    draw.chord([(48, 0), (48,64)], start=0, end=30, fill=128)
+    draw.chord([(24, 0), (24,64)], start=0, end=30, fill=128)
+    draw.chord([(40, 0), (40,64)], start=0, end=30, fill=128)
+    # im.show()
+    return im
 
 if __name__ == "__main__":
-    __ObjFile(MatrixOnBall(ImageToMatrix(randstrToImage()).tolist()))
+    # __ObjFile(MatrixOnBall(ImageToMatrix(randstrToImage()).tolist()))
+    __ObjFile(MatrixOnBall(ImageToMatrix(parallel()).tolist()))

@@ -3,8 +3,9 @@
     <h1>拖动鼠标，旋转图像，还原字符</h1>
     <div class="captcha">
       <model-obj
+        id ="objcam"
         ref="model"
-        src="http://192.168.1.102/get_file"
+        src="/get_file"
         :controlsOptions="{ enablePan: false, enableZoom: false }"
         :lights="[
           {
@@ -17,6 +18,12 @@
             type: 'DirectionalLight',
             position: { x: -1, y: -1, z: -1 },
             color: 0xff0000,
+            intensity: 0.8,
+          },
+          {
+            type: 'DirectionalLight',
+            position: { x: -1, y: 1, z: -1 },
+            color: 0x0000ff,
             intensity: 0.8,
           },
         ]"
@@ -45,20 +52,18 @@ export default {
   methods: {
     OnLoad() {
       this.loading = false;
+      
     },
     OnClick() {
-      console.log(
-        this.$refs.model.camera.position.x,
-        this.$refs.model.camera.position.y,
-        this.$refs.model.camera.position.z
-      );
       this.$axios
-        .post("http://192.168.1.102/check", {
-          posx: this.$refs.model.camera.position.y,
-          posy: this.$refs.model.camera.position.z,
-          posz: this.$refs.model.camera.position.x,
+        .post("/check", {
+          posx: this.$refs.model.camera.position.x,
+          posy: this.$refs.model.camera.position.y,
+          posz: this.$refs.model.camera.position.z
         })
-        .then((response) => (this.pass = response.data));
+        .then((response) => {
+          this.pass = String(response.data)=='true'?'通过':'不通过'
+        });
     },
   },
   components: {
