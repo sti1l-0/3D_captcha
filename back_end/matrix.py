@@ -198,7 +198,7 @@ def MatrixOnBall(matrix):
     count = 0
     file = "# Exported by python code\n"
     def final_z(x,y):
-        return randint(0, 48)
+        return randint(0, imageSize*0.8//1)
     for x in range(imageSize):
         for y in range(imageSize):
             if matrix[x][y] == 0:

@@ -27,11 +27,10 @@ def make_file():
 def check_pos():
     a = json.loads(request.data)
     # 纬度
-    theta = atan(( a["posx"]**2 + a["posy"]**2 )**0.5 / a["posz"])
+    theta = atan(( a["posx"]**2 + a["posy"]**2 )**0.5 / a["posz"] + 1e-10)
     # 经度
     phi = atan(a["posy"] / (a["posx"] + 1e-10))
-    print(theta, phi)
-    response = make_response(str(theta<0.12).lower())
+    response = make_response(str(0<theta<0.12).lower())
     return response
 
 
