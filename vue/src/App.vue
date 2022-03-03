@@ -6,28 +6,10 @@
         ref="model"
         src="/get_file"
         :controlsOptions="{ enablePan: false, enableZoom: false }"
-        :lights="[
-          {
-            type: 'DirectionalLight',
-            position: { x: 1, y: 1, z: 1 },
-            color: 0x00ff00,
-            intensity: 0.8,
-          },
-          {
-            type: 'DirectionalLight',
-            position: { x: -1, y: -1, z: -1 },
-            color: 0xff0000,
-            intensity: 0.8,
-          },
-          {
-            type: 'DirectionalLight',
-            position: { x: -1, y: 1, z: -1 },
-            color: 0x0000ff,
-            intensity: 0.8,
-          },
-        ]"
+        :lights="light"
+        :backgroundColor="backgroundColor"
+        :cameraPosition="camera"
         @on-click="OnClick"
-        @on-load="OnLoad"
       >
       </model-obj>
     </div>
@@ -45,26 +27,64 @@
 import { ModelObj } from "vue-3d-model";
 
 export default {
-  data() {
+  data () {
     return {
-      pass: "不通过",
-      token: 0,
-    };
+      light: [
+      ],
+      pass: '不通过',
+      backgroundColor: 0xffffff,
+      camera: { x: 1, y: 1, z: 125 }
+    }
+  },
+  mounted () {
+    this.light = this.loadlight()
+    this.backgroundColor = this.randomColor()
+    var a = this.Radius125()
+    this.camera.x = a[0]
+    this.camera.y = a[1]
+    this.camera.z = a[2]   
   },
   methods: {
     OnLoad() {
-      var xyz = this.Radius125()
-      this.$refs.model.camera.position.x = xyz[0];
-      this.$refs.model.camera.position.y = xyz[1];
-      this.$refs.model.camera.position.z = xyz[2];
-      console.log('asf')
+      //this.Radius125()
       requestAnimationFrame(function(){});
     },
     Radius125(){
-        var a = Math.random() * 120;
-        var b = Math.random() * (125**2 - a**2)**0.5;
-        var c = (125**2 - a**2 - b**2)**0.5
-      return [a,b,c];
+        var a = Math.random() * 120 * (Math.round(Math.random())*2-1);
+        var b = Math.random() * (125**2 - a**2)**0.5 * (Math.round(Math.random())*2-1);
+        var c = (125**2 - a**2 - b**2)**0.5 * (Math.round(Math.random())*2-1)
+        return [a,b,c]
+    },
+    loadlight(){
+      return [
+        {
+          type: 'DirectionalLight', 
+          position: { x: 1, y: 1, z: 1 }, 
+          color: this.randomColor(), 
+          intensity: 0.9, 
+        },
+        {
+          type: 'DirectionalLight', 
+          position: { x: 1, y: -1, z: -1 }, 
+          color: this.randomColor(), 
+          intensity: 0.9, 
+        },
+        {
+          type: 'DirectionalLight', 
+          position: { x: -1, y: -1, z: 1 }, 
+          color: this.randomColor(), 
+          intensity: 0.9, 
+        },
+        {
+          type: 'DirectionalLight', 
+          position: { x: -1, y: 1, z: -1 }, 
+          color: this.randomColor(), 
+          intensity: 0.9, 
+        },
+      ]
+    },
+    randomColor(){
+      return Math.floor(Math.random()*16777215); 
     },
     OnClick() {
       this.$axios
@@ -78,7 +98,8 @@ export default {
           if(this.pass === '通过'){
             var t = document.getElementById('captcha');//选取id为test的元素
             t.style.display = 'none';	// 隐藏选择的元素
-            t.style.background = '#00ff00';
+            t = document.getElementById('cap_result');
+            t.style.background = "green";
             t = document.getElementById('github');//选取id为test的元素
             t.style.visibility = 'visible';	// 隐藏选择的元素
           }
@@ -97,7 +118,7 @@ export default {
     width: 40%;
   }
   #cap_result {
-    background: #f00;
+    background: red;
     width: fit-content;
   }
 
