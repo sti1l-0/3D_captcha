@@ -4,7 +4,7 @@
     <div class="captcha">
       <model-obj
         ref="model"
-        src="http://192.168.1.172:80/get_file"
+        src="/get_file"
         :controlsOptions="{ enablePan: false, enableZoom: false }"
         :lights="[
           {
@@ -64,7 +64,7 @@ export default {
     },
     OnClick() {
       this.$axios
-        .post("http://192.168.1.172:80/check", {
+        .post("/check", {
           posx: this.$refs.model.camera.position.x,
           posy: this.$refs.model.camera.position.y,
           posz: this.$refs.model.camera.position.z
