@@ -1,8 +1,6 @@
-from tkinter import CENTER
 from PIL import Image, ImageFont, ImageDraw
-from random import randint, sample, random
+from random import randint, sample
 import string
-import json
 import numpy as np
 
 imageSize = 64
@@ -222,5 +220,5 @@ def parallel():
     return im
 
 if __name__ == "__main__":
-    # __ObjFile(MatrixOnBall(ImageToMatrix(randstrToImage()).tolist()))
-    __ObjFile(MatrixOnBall(ImageToMatrix(parallel()).tolist()))
+    __ObjFile(MatrixOnBall(ImageToMatrix(randstrToImage()).tolist()))
+    # __ObjFile(MatrixOnBall(ImageToMatrix(parallel()).tolist()))

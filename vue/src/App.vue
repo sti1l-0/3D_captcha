@@ -3,9 +3,8 @@
     <h1>拖动鼠标，旋转图像，还原字符</h1>
     <div class="captcha">
       <model-obj
-        id ="objcam"
         ref="model"
-        src="/get_file"
+        src="http://192.168.1.172:80/get_file"
         :controlsOptions="{ enablePan: false, enableZoom: false }"
         :lights="[
           {
@@ -44,19 +43,28 @@ import { ModelObj } from "vue-3d-model";
 export default {
   data() {
     return {
-      loading: true,
       pass: "不通过",
       token: 0,
     };
   },
   methods: {
     OnLoad() {
-      this.loading = false;
-      
+      var xyz = this.Radius125()
+      this.$refs.model.camera.position.x = xyz[0];
+      this.$refs.model.camera.position.y = xyz[1];
+      this.$refs.model.camera.position.z = xyz[2];
+      console.log('asf')
+      requestAnimationFrame(function(){});
+    },
+    Radius125(){
+        var a = Math.random() * 120;
+        var b = Math.random() * (125**2 - a**2)**0.5;
+        var c = (125**2 - a**2 - b**2)**0.5
+      return [a,b,c];
     },
     OnClick() {
       this.$axios
-        .post("/check", {
+        .post("http://192.168.1.172:80/check", {
           posx: this.$refs.model.camera.position.x,
           posy: this.$refs.model.camera.position.y,
           posz: this.$refs.model.camera.position.z

@@ -1,11 +1,13 @@
 from flask import Flask, make_response, session, request, render_template
 from math import atan
+from flask_cors import CORS
 import matrix
 import json
 
 
 app = Flask(__name__,template_folder = "./dist",static_folder='./dist')
 app.config["SECRET_KEY"] = "captcha"
+CORS(app)
 
 
 @app.route('/')
@@ -30,6 +32,7 @@ def check_pos():
     theta = atan(( a["posx"]**2 + a["posy"]**2 )**0.5 / a["posz"] + 1e-10)
     # 经度
     phi = atan(a["posy"] / (a["posx"] + 1e-10))
+    print(a)
     response = make_response(str(0<theta<0.12).lower())
     return response
 
