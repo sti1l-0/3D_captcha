@@ -4,3 +4,4 @@ back_end/Lib/
 back_end/Scripts/
 back_end/__pycache__/
 *.pyc
+*.pyc
